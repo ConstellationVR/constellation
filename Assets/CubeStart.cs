@@ -18,15 +18,20 @@ public class CubeStart : MonoBehaviour {
 	
 
 	// Use this for initialization
-	void Start () {
+	void Start () {	
+		GetComponent<SpringJoint> ().connectedBody = player.GetComponent<Rigidbody> ();
+
 		rb = GetComponent<Rigidbody> ();
 		rb.AddForce (this.transform.forward * speed);
-		radiusSpring.spring = 0f;
+		radiusSpring.spring = 200f;
+		radiusSpring.minDistance = 1f;
+		radiusSpring.maxDistance = 1f;
 
 		// format the text so that it fits in a nice box
 		string finalText = FormatText (assocText);
 		text.text = finalText;
-		text2.text = finalText;
+		text2.text = "";
+		//text2.text = finalText;
 
 		// we want to add a collider that fits exactly around the text.
 		Bounds textBounds = text.GetComponent<Renderer> ().bounds;
@@ -40,11 +45,11 @@ public class CubeStart : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if ((player.transform.position - this.transform.position).magnitude > sphereRadius) {
+		/*if ((player.transform.position - this.transform.position).magnitude > sphereRadius) {
 			radiusSpring.minDistance = sphereRadius - .4f;
 			radiusSpring.maxDistance = sphereRadius + .4f;
 			radiusSpring.spring = 200f;
-		}
+		}*/
 
 		// FOR TESTING ONLY
 		if(Input.GetKeyDown("right")) {
@@ -77,10 +82,13 @@ public class CubeStart : MonoBehaviour {
 		// then add a spring that acts as a rigid rod to keep them tied together
 		SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
 		Debug.Log (col.gameObject.name);
+		newSpring.anchor = Vector3.zero;
+		newSpring.autoConfigureConnectedAnchor = false;
+		newSpring.connectedAnchor = Vector3.zero;
 		newSpring.connectedBody = col.gameObject.GetComponent<Rigidbody>();
-		newSpring.minDistance = 0.02f;
-		newSpring.maxDistance = 0.08f;
-		newSpring.spring = 900f;
+		newSpring.minDistance = 0.5f;
+		newSpring.maxDistance = 0.8f;
+		newSpring.spring = 100f;
 
 		// TODO: also add a visible line that always connects the centers. the connection code is in 
 		// the line object's script

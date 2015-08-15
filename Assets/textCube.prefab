@@ -14,6 +14,7 @@ GameObject:
   - 114: {fileID: 11471930}
   - 54: {fileID: 5495898}
   - 145: {fileID: 14513380}
+  - 114: {fileID: 11476656}
   m_Layer: 0
   m_Name: textCube
   m_TagString: Untagged
@@ -63,7 +64,7 @@ Transform:
   m_GameObject: {fileID: 143292}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: .699999988, y: .699999988, z: .699999988}
   m_Children: []
   m_Father: {fileID: 467096}
   m_RootOrder: 0
@@ -86,7 +87,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 112474}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.19000006, y: 0, z: -7.98999977}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 429546}
@@ -106,7 +107,7 @@ MeshRenderer:
   - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
-  m_UseLightProbes: 1
+  m_UseLightProbes: 0
   m_ReflectionProbeUsage: 1
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
@@ -180,7 +181,7 @@ Rigidbody:
   m_GameObject: {fileID: 112474}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: .899999976
+  m_Drag: 1.39999998
   m_AngularDrag: 0
   m_UseGravity: 0
   m_IsKinematic: 0
@@ -208,7 +209,7 @@ TextMesh:
   m_GameObject: {fileID: 195816}
   m_Text: "this is 140 characters\n this is 140 characters\n this is 140 this is 140\n
     characters this is 140\n characters this is 140\n this is 140 characters\n this."
-  m_OffsetZ: 1
+  m_OffsetZ: 0
   m_CharacterSize: .129999995
   m_LineSpacing: 1
   m_Anchor: 4
@@ -230,7 +231,7 @@ TextMesh:
   m_GameObject: {fileID: 143292}
   m_Text: "this is 140 characters\n this is 140 characters\n this is 140 this is 140\n
     characters this is 140\n characters this is 140\n this is 140 characters\n this."
-  m_OffsetZ: 1
+  m_OffsetZ: 0
   m_CharacterSize: .129999995
   m_LineSpacing: 1
   m_Anchor: 4
@@ -255,10 +256,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  radiusSpring: {fileID: 0}
+  radiusSpring: {fileID: 14513380}
   text: {fileID: 10224532}
   text2: {fileID: 10215574}
-  assocText: 
+  assocText: test text
+--- !u!114 &11476656
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 112474}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c169774bec3cf0e4daeb75f108c268f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!145 &14513380
 SpringJoint:
   m_ObjectHideFlags: 1
@@ -266,13 +278,13 @@ SpringJoint:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 112474}
   m_ConnectedBody: {fileID: 0}
-  m_Anchor: {x: 0, y: .5, z: 0}
-  m_AutoConfigureConnectedAnchor: 1
+  m_Anchor: {x: 0, y: 0, z: 0}
+  m_AutoConfigureConnectedAnchor: 0
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
-  m_Spring: 10
-  m_Damper: .200000003
-  m_MinDistance: 0
-  m_MaxDistance: 0
+  m_Spring: 100
+  m_Damper: .300000012
+  m_MinDistance: 1
+  m_MaxDistance: 1
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
@@ -304,6 +316,18 @@ Prefab:
       propertyPath: text2
       value: 
       objectReference: {fileID: 10215574}
+    - target: {fileID: 0}
+      propertyPath: m_LocalScale.x
+      value: .699999988
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_LocalScale.y
+      value: .699999988
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_LocalScale.z
+      value: .699999988
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 112474}
