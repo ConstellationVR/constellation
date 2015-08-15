@@ -32,7 +32,7 @@ public class CubeStart : MonoBehaviour {
 		Bounds textBounds = text.GetComponent<Renderer> ().bounds;
 		this.transform.position = textBounds.center;
 
-		bc = GetComponent<BoxCollider> ();
+		bc = this.transform.FindChild("Cube").GetComponent<BoxCollider> ();
 		bc.size = new Vector3 (textBounds.extents.x * 2, textBounds.extents.y * 2, 0f);
 		launchDone = true;
 
@@ -41,16 +41,62 @@ public class CubeStart : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if ((player.transform.position - this.transform.position).magnitude > sphereRadius) {
-			radiusSpring.minDistance = sphereRadius - .05f;
-			radiusSpring.maxDistance = sphereRadius + .05f;
-			radiusSpring.spring = 900f;
+			radiusSpring.minDistance = sphereRadius - .4f;
+			radiusSpring.maxDistance = sphereRadius + .4f;
+			radiusSpring.spring = 200f;
 		}
 
 		// FOR TESTING ONLY
 		if(Input.GetKeyDown("right")) {
-			rb.AddForce(new Vector3(15, 0, 0));
+			rb.AddForce(new Vector3(30, 0, 0));
+		}
+		// FOR TESTING ONLY
+		if(Input.GetKeyDown("left")) {
+			rb.AddForce(new Vector3(-30, 0, 0));
+		}
+		// FOR TESTING ONLY
+		if(Input.GetKeyDown("up")) {
+			rb.AddForce(new Vector3(0, 30, 0));
+		}
+
+		// FOR TESTING ONLY
+		if(Input.GetKeyDown("down")) {
+			rb.AddForce(new Vector3(0, -30, 0));
 		}
 	}
+	void OnTriggerEnter(Collider col) {
+		Debug.Log ("hi");
+		// then add a spring that acts as a rigid rod to keep them tied together
+		SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
+		Debug.Log (col.gameObject.name);
+		newSpring.connectedBody = col.gameObject.GetComponent<Rigidbody>();
+		newSpring.minDistance = 0.02f;
+		newSpring.maxDistance = 0.08f;
+		newSpring.spring = 900f;
+	}
+	void OnCollisionEnter (Collision col) {
+		// TODO (zliu): we probably have to add logic here to make sure the spring is only
+		// added if the user lets go of the object (Kinect integration).
+		
+		// TODO: while it's being held on top of the other object, change text color to green
+		// TODO: wait until release
+		// TODO: on release, change text color back to white
+		
+		// on release, add a repulsive force between the objects -- or just use spring??
+		
+		Debug.Log ("hi");
+		// then add a spring that acts as a rigid rod to keep them tied together
+		SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
+		Debug.Log (col.gameObject.name);
+		newSpring.connectedBody = col.gameObject.GetComponent<Rigidbody>();
+		newSpring.minDistance = 0.02f;
+		newSpring.maxDistance = 0.08f;
+		newSpring.spring = 900f;
+		
+		// also add a visible line that always connects the centers. the connection code is in 
+		// the line object's script
+	}
+
 
 	public static string FormatText(string assocText) {
 		char[] delim = {' '};
