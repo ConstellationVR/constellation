@@ -3,6 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Kinect = Windows.Kinect;
 
+using LockingPolicy = Thalmic.Myo.LockingPolicy;
+using Pose = Thalmic.Myo.Pose;
+using UnlockType = Thalmic.Myo.UnlockType;
+using VibrationType = Thalmic.Myo.VibrationType;
+
 public class BodySourceView : MonoBehaviour 
 {
     public Material BoneMaterial;
@@ -18,6 +23,17 @@ public class BodySourceView : MonoBehaviour
 	private GameObject bodyObject;
     private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
     private BodySourceManager _BodyManager;
+
+	private bool myoHandIsClosed = false;
+
+	// Myo game object to connect with.
+	// This object must have a ThalmicMyo script attached.
+	public GameObject myo = null;
+	
+	// The pose from the last update. This is used to determine if the pose has changed
+	// so that actions are only performed upon making them rather than every frame during
+	// which they are active.
+	private Pose _lastPose = Pose.Unknown;
     
     private Dictionary<Kinect.JointType, Kinect.JointType> _BoneMap = new Dictionary<Kinect.JointType, Kinect.JointType>()
     {
@@ -57,6 +73,42 @@ public class BodySourceView : MonoBehaviour
 
     void Update () 
     {
+		// Access the ThalmicMyo component attached to the Myo game object.
+		ThalmicMyo thalmicMyo = myo.GetComponent<ThalmicMyo> ();
+
+		myoHandIsClosed = thalmicMyo.pose == Pose.Fist;
+		
+		// Check if the pose has changed since last update.
+		// The ThalmicMyo component of a Myo game object has a pose property that is set to the
+		// currently detected pose (e.g. Pose.Fist for the user making a fist). If no pose is currently
+		// detected, pose will be set to Pose.Rest. If pose detection is unavailable, e.g. because Myo
+		// is not on a user's arm, pose will be set to Pose.Unknown.
+		if (thalmicMyo.pose != _lastPose) {
+			_lastPose = thalmicMyo.pose;
+			
+			// Vibrate the Myo armband when a fist is made.
+			if (thalmicMyo.pose == Pose.Fist) {
+				thalmicMyo.Vibrate (VibrationType.Short);
+				
+				ExtendUnlockAndNotifyUserAction (thalmicMyo);
+				
+				// Change material when wave in, wave out or double tap poses are made.
+			} else if (thalmicMyo.pose == Pose.WaveIn) {
+				//GetComponent<Renderer>().material = waveInMaterial;
+				
+				ExtendUnlockAndNotifyUserAction (thalmicMyo);
+			} else if (thalmicMyo.pose == Pose.WaveOut) {
+				//GetComponent<Renderer>().material = waveOutMaterial;
+				
+				ExtendUnlockAndNotifyUserAction (thalmicMyo);
+			} else if (thalmicMyo.pose == Pose.DoubleTap) {
+				//GetComponent<Renderer>().material = doubleTapMaterial;
+				
+				ExtendUnlockAndNotifyUserAction (thalmicMyo);
+			}
+		}
+
+
         if (BodySourceManager == null)
         {
             return;
@@ -165,13 +217,13 @@ public class BodySourceView : MonoBehaviour
 
 		Kinect.Joint rightHandJoint = body.Joints [Kinect.JointType.HandRight];
 		rightPointer.transform.position = GetVector3FromJoint (rightHandJoint) - headPosition;
-		rightPointer.GetComponent<Renderer>().material.color = GetColorForState(rightHand.isClosed);
+		rightPointer.GetComponent<Renderer>().material.color = GetColorForState(myoHandIsClosed);
 
 		Kinect.Joint leftHandJoint = body.Joints [Kinect.JointType.HandLeft];
 		leftPointer.transform.position = GetVector3FromJoint (leftHandJoint) - headPosition;
 		leftPointer.GetComponent<Renderer>().material.color = GetColorForState(leftHand.isClosed);
 
-		if (rightHand.isClosed) {
+		if (myoHandIsClosed) {
 			// Attempt to bind the object under the pointer
 			if (rightHandObject == null) {
 				Debug.Log ("Attaching spring");
@@ -305,4 +357,17 @@ public class BodySourceView : MonoBehaviour
     {
         return new Vector3(joint.Position.X, joint.Position.Y, -joint.Position.Z) * 1;
     }
+
+	// Extend the unlock if ThalmcHub's locking policy is standard, and notifies the given myo that a user action was
+	// recognized.
+	void ExtendUnlockAndNotifyUserAction (ThalmicMyo myo)
+	{
+		ThalmicHub hub = ThalmicHub.instance;
+		
+		if (hub.lockingPolicy == LockingPolicy.Standard) {
+			myo.Unlock (UnlockType.Timed);
+		}
+		
+		myo.NotifyUserAction ();
+	}
 }
