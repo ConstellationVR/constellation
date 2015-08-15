@@ -11,6 +11,9 @@ public class BodySourceView : MonoBehaviour
     
 	private HandStatus leftHand = new HandStatus();
 	private HandStatus rightHand = new HandStatus();
+	private GameObject leftPointer;
+	private GameObject rightPointer;
+	private SpringJoint rightHandObject;
 
     private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
     private BodySourceManager _BodyManager;
@@ -129,11 +132,11 @@ public class BodySourceView : MonoBehaviour
             jointObj.transform.parent = body.transform;
         }
 
-		GameObject rightPointer = Instantiate (Pointer);
+		rightPointer = Instantiate (Pointer);
 		rightPointer.name = "RightPointer";
 		rightPointer.transform.parent = body.transform;
         
-		GameObject leftPointer = Instantiate (Pointer);
+		leftPointer = Instantiate (Pointer);
 		leftPointer.name = "LeftPointer";
 		leftPointer.transform.parent = body.transform;
 
@@ -149,15 +152,45 @@ public class BodySourceView : MonoBehaviour
 		leftHand.update (Time.deltaTime, body.HandLeftState);
 
 		Kinect.Joint rightHandJoint = body.Joints [Kinect.JointType.HandRight];
-		Transform rightPointer = bodyObject.transform.FindChild ("RightPointer");
-		rightPointer.localPosition = GetVector3FromJoint (rightHandJoint) - headPosition;
+		rightPointer.transform.position = GetVector3FromJoint (rightHandJoint) - headPosition;
 		rightPointer.GetComponent<Renderer>().material.color = GetColorForState(rightHand.isClosed);
 
 		Kinect.Joint leftHandJoint = body.Joints [Kinect.JointType.HandLeft];
-		Transform leftPointer = bodyObject.transform.FindChild ("LeftPointer");
-		leftPointer.localPosition = GetVector3FromJoint (leftHandJoint) - headPosition;
+		leftPointer.transform.position = GetVector3FromJoint (leftHandJoint) - headPosition;
 		leftPointer.GetComponent<Renderer>().material.color = GetColorForState(leftHand.isClosed);
 
+		if (rightHand.isClosed) {
+			// Attempt to bind the object under the pointer
+			if (rightHandObject == null) {
+				Debug.Log ("Attaching spring");
+				SpringJoint joint = rightPointer.AddComponent<SpringJoint>();
+				RaycastHit hit;
+				if (Physics.Raycast(this.transform.position, rightPointer.transform.position, out hit)) {
+					//joint.anchor = Vector3(0,0,0);
+					joint.anchor = Vector3.zero;
+					joint.connectedAnchor = Vector3.zero;
+					joint.autoConfigureConnectedAnchor = false;
+					joint.connectedBody = hit.collider.gameObject.GetComponent<Rigidbody>();
+					joint.spring = 100f;
+					joint.damper = 0.2f;
+					joint.minDistance = 0;
+					joint.maxDistance = 0;
+					joint.breakForce = float.PositiveInfinity;
+					joint.breakTorque = float.PositiveInfinity;
+					joint.enableCollision = false;
+					joint.enablePreprocessing = true;
+				}
+				rightHandObject = joint;
+			}
+		} else {
+			// Free the object if one is currently bound
+			if (rightHandObject != null) {
+				Destroy(rightHandObject);
+				//rightHandObject = null;
+			}
+		}
+
+		/*
         for (Kinect.JointType jt = Kinect.JointType.SpineBase; jt <= Kinect.JointType.ThumbRight; jt++)
         {
             Kinect.Joint sourceJoint = body.Joints[jt];
@@ -182,7 +215,7 @@ public class BodySourceView : MonoBehaviour
             {
                 lr.enabled = false;
             }
-        }
+        }*/
     }
 
 	class HandStatus {
