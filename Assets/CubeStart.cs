@@ -65,16 +65,6 @@ public class CubeStart : MonoBehaviour {
 		}
 	}
 	void OnTriggerEnter(Collider col) {
-		Debug.Log ("hi");
-		// then add a spring that acts as a rigid rod to keep them tied together
-		SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
-		Debug.Log (col.gameObject.name);
-		newSpring.connectedBody = col.gameObject.GetComponent<Rigidbody>();
-		newSpring.minDistance = 0.02f;
-		newSpring.maxDistance = 0.08f;
-		newSpring.spring = 900f;
-	}
-	void OnCollisionEnter (Collision col) {
 		// TODO (zliu): we probably have to add logic here to make sure the spring is only
 		// added if the user lets go of the object (Kinect integration).
 		
@@ -82,9 +72,8 @@ public class CubeStart : MonoBehaviour {
 		// TODO: wait until release
 		// TODO: on release, change text color back to white
 		
-		// on release, add a repulsive force between the objects -- or just use spring??
-		
-		Debug.Log ("hi");
+		// TODO: on release, add a repulsive force between the objects -- or just use spring??
+
 		// then add a spring that acts as a rigid rod to keep them tied together
 		SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
 		Debug.Log (col.gameObject.name);
@@ -92,11 +81,10 @@ public class CubeStart : MonoBehaviour {
 		newSpring.minDistance = 0.02f;
 		newSpring.maxDistance = 0.08f;
 		newSpring.spring = 900f;
-		
-		// also add a visible line that always connects the centers. the connection code is in 
+
+		// TODO: also add a visible line that always connects the centers. the connection code is in 
 		// the line object's script
 	}
-
 
 	public static string FormatText(string assocText) {
 		char[] delim = {' '};

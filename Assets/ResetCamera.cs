@@ -9,7 +9,7 @@ public class ResetCamera : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void LateUpdate () {
-		transform.position = -Camera.current.transform.localPosition;
+	void Update () {
+		//transform.position = -Camera.current.transform.localPosition;
 	}
 }

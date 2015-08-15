@@ -139,7 +139,7 @@ public class BodySourceView : MonoBehaviour
                 trackedIds.Add (body.TrackingId);
 
 				// TODO: hacky way to make this work with one body
-				Debug.Log ("# of bodies: " + data.Length);
+				//Debug.Log ("# of bodies: " + data.Length);
 				RefreshBodyObject (body, bodyObject);
 				return;
             }

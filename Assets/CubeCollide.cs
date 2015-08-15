@@ -23,7 +23,7 @@ public class CubeCollide : MonoBehaviour {
 		
 		// on release, add a repulsive force between the objects -- or just use spring??
 		
-		Debug.Log ("hi");
+		Debug.Log ("hi3");
 		// then add a spring that acts as a rigid rod to keep them tied together
 		SpringJoint newSpring = this.transform.parent.gameObject.AddComponent<SpringJoint> ();
 		Debug.Log (col.gameObject.name);
