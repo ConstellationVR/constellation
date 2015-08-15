@@ -9,6 +9,9 @@ public class BodySourceView : MonoBehaviour
     public GameObject BodySourceManager;
 	public GameObject Pointer;
     
+	private HandStatus leftHand = new HandStatus();
+	private HandStatus rightHand = new HandStatus();
+
     private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
     private BodySourceManager _BodyManager;
     
@@ -119,9 +122,9 @@ public class BodySourceView : MonoBehaviour
             LineRenderer lr = jointObj.AddComponent<LineRenderer>();
             lr.SetVertexCount(2);
             lr.material = BoneMaterial;
-            lr.SetWidth(0.05f, 0.05f);
+            lr.SetWidth(0.005f, 0.005f);
             
-            jointObj.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+            jointObj.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
             jointObj.name = jt.ToString();
             jointObj.transform.parent = body.transform;
         }
@@ -142,17 +145,19 @@ public class BodySourceView : MonoBehaviour
 		Kinect.Joint headJoint = body.Joints [Kinect.JointType.Neck];
 		Vector3 headPosition = GetVector3FromJoint (headJoint);
 
-		Kinect.Joint rightHand = body.Joints [Kinect.JointType.HandRight];
+		rightHand.update (Time.deltaTime, body.HandRightState);
+		leftHand.update (Time.deltaTime, body.HandLeftState);
+
+		Kinect.Joint rightHandJoint = body.Joints [Kinect.JointType.HandRight];
 		Transform rightPointer = bodyObject.transform.FindChild ("RightPointer");
-		rightPointer.localPosition = GetVector3FromJoint (rightHand) - headPosition;
-		rightPointer.GetComponent<Renderer>().material.color = GetColorForState(body.HandRightState);
+		rightPointer.localPosition = GetVector3FromJoint (rightHandJoint) - headPosition;
+		rightPointer.GetComponent<Renderer>().material.color = GetColorForState(rightHand.isClosed);
 
-		Kinect.Joint leftHand = body.Joints [Kinect.JointType.HandLeft];
+		Kinect.Joint leftHandJoint = body.Joints [Kinect.JointType.HandLeft];
 		Transform leftPointer = bodyObject.transform.FindChild ("LeftPointer");
-		leftPointer.localPosition = GetVector3FromJoint (leftHand) - headPosition;
-		leftPointer.GetComponent<Renderer>().material.color = GetColorForState(body.HandLeftState);
+		leftPointer.localPosition = GetVector3FromJoint (leftHandJoint) - headPosition;
+		leftPointer.GetComponent<Renderer>().material.color = GetColorForState(leftHand.isClosed);
 
-		/*
         for (Kinect.JointType jt = Kinect.JointType.SpineBase; jt <= Kinect.JointType.ThumbRight; jt++)
         {
             Kinect.Joint sourceJoint = body.Joints[jt];
@@ -178,8 +183,47 @@ public class BodySourceView : MonoBehaviour
                 lr.enabled = false;
             }
         }
-		*/
     }
+
+	class HandStatus {
+		public HandStatus() {}
+
+		public bool isClosed = false;
+		bool nextIsClosed = false;
+		float heldTime = 0;
+		static float threshold = 0.1f;
+
+		public void update(float timeDelta, Kinect.HandState nextState) {
+			bool nextNextIsClosed;
+
+			switch (nextState) {
+			case Kinect.HandState.Open:
+				nextNextIsClosed = false;
+				break;
+			case Kinect.HandState.Closed:
+				nextNextIsClosed = true;
+				break;
+			default:
+				return;
+			}
+
+			if (nextIsClosed == nextNextIsClosed) {
+				heldTime += timeDelta;
+				if (heldTime > threshold) {
+					isClosed = nextIsClosed;
+				}
+			} else {
+				heldTime = 0;
+				nextIsClosed = nextNextIsClosed;
+			}
+		}
+	}
+
+	private static Color GetColorForState(bool state)
+	{
+		if (state) return Color.red;
+		else return Color.green;
+	}
     
     private static Color GetColorForState(Kinect.TrackingState state)
     {
@@ -214,6 +258,6 @@ public class BodySourceView : MonoBehaviour
     
     private static Vector3 GetVector3FromJoint(Kinect.Joint joint)
     {
-        return new Vector3(joint.Position.X * 10, joint.Position.Y * 10, joint.Position.Z * -10);
+        return new Vector3(joint.Position.X, joint.Position.Y, -joint.Position.Z) * 1;
     }
 }
