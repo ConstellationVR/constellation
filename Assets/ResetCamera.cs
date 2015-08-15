@@ -10,6 +10,9 @@ public class ResetCamera : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//transform.position = -Camera.current.transform.localPosition;
+		try {
+			transform.position = -Camera.current.transform.localPosition;
+		} catch (System.NullReferenceException e) {
+		}
 	}
 }

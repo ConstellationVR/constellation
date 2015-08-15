@@ -14,9 +14,13 @@ public class Generator : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown ("space")) {
 			//if(!Physics.Raycast (this.transform.position, this.transform.forward, 40))
-			GameObject cube = (GameObject) Instantiate(cubePrefab, this.transform.position, this.transform.rotation);
-			cube.GetComponent<CubeStart>().assocText = "hello";
-			cube.GetComponent<CubeStart>().player = originBody;
+			generate();
 		}
+	}
+
+	public void generate() {
+		GameObject cube = (GameObject) Instantiate(cubePrefab, Vector3.zero + this.transform.forward.normalized / 10, Quaternion.identity);
+		cube.GetComponent<CubeStart>().assocText = "hello";
+		cube.GetComponent<CubeStart>().player = originBody;
 	}
 }

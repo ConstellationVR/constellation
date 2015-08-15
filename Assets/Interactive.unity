@@ -434,6 +434,7 @@ MonoBehaviour:
   BoneMaterial: {fileID: 2100000, guid: f2ea145c63353784985576f08398a815, type: 2}
   BodySourceManager: {fileID: 2073119795}
   Pointer: {fileID: 127516, guid: 14a3f4f249793c540b48710120dd1c91, type: 2}
+  generator: {fileID: 0}
   myo: {fileID: 1920900569}
 --- !u!1001 &1920900568
 Prefab:

@@ -15,6 +15,8 @@ public class CubeStart : MonoBehaviour {
 	private bool launchDone = false;
 	private Rigidbody rb;
 	private BoxCollider bc;
+
+	private float totalTime = 0f;
 	
 
 	// Use this for initialization
@@ -23,9 +25,9 @@ public class CubeStart : MonoBehaviour {
 
 		rb = GetComponent<Rigidbody> ();
 		rb.AddForce (this.transform.forward * speed);
-		radiusSpring.spring = 200f;
-		radiusSpring.minDistance = 1f;
-		radiusSpring.maxDistance = 1f;
+		radiusSpring.spring = 0f;
+		radiusSpring.minDistance = 2f;
+		radiusSpring.maxDistance = 2f;
 
 		// format the text so that it fits in a nice box
 		string finalText = FormatText (assocText);
@@ -45,11 +47,11 @@ public class CubeStart : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		/*if ((player.transform.position - this.transform.position).magnitude > sphereRadius) {
-			radiusSpring.minDistance = sphereRadius - .4f;
-			radiusSpring.maxDistance = sphereRadius + .4f;
-			radiusSpring.spring = 200f;
-		}*/
+		if (totalTime > 1f) {
+			radiusSpring.spring = 500f;
+		} else {
+			totalTime += Time.deltaTime;
+		}
 
 		// FOR TESTING ONLY
 		if(Input.GetKeyDown("right")) {

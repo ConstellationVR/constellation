@@ -13,6 +13,8 @@ public class BodySourceView : MonoBehaviour
     public Material BoneMaterial;
     public GameObject BodySourceManager;
 	public GameObject Pointer;
+
+	public Generator generator;
     
 	private HandStatus leftHand = new HandStatus();
 	private HandStatus rightHand = new HandStatus();
@@ -76,7 +78,9 @@ public class BodySourceView : MonoBehaviour
 		// Access the ThalmicMyo component attached to the Myo game object.
 		ThalmicMyo thalmicMyo = myo.GetComponent<ThalmicMyo> ();
 
-		myoHandIsClosed = thalmicMyo.pose == Pose.Fist;
+		if (thalmicMyo.pose == Pose.Rest || thalmicMyo.pose == Pose.Fist) {
+			myoHandIsClosed = thalmicMyo.pose == Pose.Fist;
+		}
 		
 		// Check if the pose has changed since last update.
 		// The ThalmicMyo component of a Myo game object has a pose property that is set to the
@@ -84,6 +88,7 @@ public class BodySourceView : MonoBehaviour
 		// detected, pose will be set to Pose.Rest. If pose detection is unavailable, e.g. because Myo
 		// is not on a user's arm, pose will be set to Pose.Unknown.
 		if (thalmicMyo.pose != _lastPose) {
+			Debug.Log (thalmicMyo.pose);
 			_lastPose = thalmicMyo.pose;
 			
 			// Vibrate the Myo armband when a fist is made.
@@ -93,6 +98,7 @@ public class BodySourceView : MonoBehaviour
 				ExtendUnlockAndNotifyUserAction (thalmicMyo);
 				
 				// Change material when wave in, wave out or double tap poses are made.
+				//generator.generate();
 			} else if (thalmicMyo.pose == Pose.WaveIn) {
 				//GetComponent<Renderer>().material = waveInMaterial;
 				
