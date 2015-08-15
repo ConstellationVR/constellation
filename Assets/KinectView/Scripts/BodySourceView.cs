@@ -15,6 +15,7 @@ public class BodySourceView : MonoBehaviour
 	private GameObject rightPointer;
 	private SpringJoint rightHandObject;
 
+	private GameObject bodyObject;
     private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
     private BodySourceManager _BodyManager;
     
@@ -50,6 +51,10 @@ public class BodySourceView : MonoBehaviour
         { Kinect.JointType.Neck, Kinect.JointType.Head },
     };
     
+	void Start() {
+		bodyObject = CreateBodyObject (0);
+	}
+
     void Update () 
     {
         if (BodySourceManager == null)
@@ -80,6 +85,11 @@ public class BodySourceView : MonoBehaviour
             if(body.IsTracked)
             {
                 trackedIds.Add (body.TrackingId);
+
+				// TODO: hacky way to make this work with one body
+				Debug.Log ("# of bodies: " + data.Length);
+				RefreshBodyObject (body, bodyObject);
+				return;
             }
         }
         
@@ -118,6 +128,7 @@ public class BodySourceView : MonoBehaviour
     {
         GameObject body = new GameObject("Body:" + id);
         
+		/*
         for (Kinect.JointType jt = Kinect.JointType.SpineBase; jt <= Kinect.JointType.ThumbRight; jt++)
         {
             GameObject jointObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -131,6 +142,7 @@ public class BodySourceView : MonoBehaviour
             jointObj.name = jt.ToString();
             jointObj.transform.parent = body.transform;
         }
+        */
 
 		rightPointer = Instantiate (Pointer);
 		rightPointer.name = "RightPointer";
@@ -171,8 +183,8 @@ public class BodySourceView : MonoBehaviour
 					joint.connectedAnchor = Vector3.zero;
 					joint.autoConfigureConnectedAnchor = false;
 					joint.connectedBody = hit.collider.gameObject.GetComponent<Rigidbody>();
-					joint.spring = 100f;
-					joint.damper = 0.2f;
+					joint.spring = 200f;
+					joint.damper = 20f;
 					joint.minDistance = 0;
 					joint.maxDistance = 0;
 					joint.breakForce = float.PositiveInfinity;
