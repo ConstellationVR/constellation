@@ -11,7 +11,8 @@ public class Generator : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown ("space")) {
-			Instantiate(cubePrefab, this.transform.position, this.transform.rotation);
+			if(!Physics.Raycast (this.transform.position, this.transform.forward, 40))
+				Instantiate(cubePrefab, this.transform.position, this.transform.rotation);
 		}
 	}
 }

@@ -27,3 +27,27 @@ Cmd: compileSnippet
   api=0 type=0 insize=1705 outsize=541 kw=SOFTPARTICLES_OFF ok=1
 Cmd: compileSnippet
   api=0 type=1 insize=1705 outsize=6 kw=SOFTPARTICLES_OFF ok=1
+Cmd: compileSnippet
+  api=0 type=0 insize=1333 outsize=1134 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=1 insize=1333 outsize=6 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=0 insize=1329 outsize=1129 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=1 insize=1329 outsize=6 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=0 insize=1329 outsize=1129 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=1 insize=1329 outsize=6 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=0 insize=1333 outsize=1134 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=1 insize=1333 outsize=6 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=0 insize=1321 outsize=1119 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=1 insize=1321 outsize=6 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=0 insize=1331 outsize=1129 kw= ok=1
+Cmd: compileSnippet
+  api=0 type=1 insize=1331 outsize=6 kw= ok=1
