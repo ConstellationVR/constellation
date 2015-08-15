@@ -3,14 +3,17 @@ using System.Collections;
 
 public class CubeStart : MonoBehaviour {
 	public static int speed = 142;
-	public static int maxCharsPerLine = 20;
+	public static int maxCharsPerLine = 15;
 
 	public SpringJoint radiusSpring;
 	public TextMesh text;
 	public TextMesh text2;
+	public string assocText;
+
 	private bool launchDone = false;
 	private Rigidbody rb;
-	public string assocText;
+	private BoxCollider bc;
+	
 
 	// Use this for initialization
 	void Start () {
@@ -22,11 +25,15 @@ public class CubeStart : MonoBehaviour {
 		string finalText = FormatText (assocText);
 		text.text = finalText;
 		text2.text = finalText;
-		/*
-		// we want to resize the parent to be a cube that fits exactly around the text mesh bounds
+
+		// we want to add a collider that fits exactly around the text.
 		Bounds textBounds = text.GetComponent<Renderer> ().bounds;
 		this.transform.position = textBounds.center;
-		this.transform.localScale = new Vector3 (textBounds.extents.x, textBounds.extents.y, 0f);*/
+		//this.transform.localScale = new Vector3 (textBounds.extents.x, textBounds.extents.y, 0f);
+
+		bc = GetComponent<BoxCollider> ();
+		bc.size = new Vector3 (textBounds.extents.x * 2, textBounds.extents.y * 2, 0f);
+
 	}
 	
 	// Update is called once per frame
@@ -37,13 +44,17 @@ public class CubeStart : MonoBehaviour {
 	}
 
 	public static string FormatText(string assocText) {
-		int numLines = assocText.Length / maxCharsPerLine;
+		char[] delim = {' '};
+		string[] words = assocText.Split (delim);
+		int currLineLen = 0;
 		string finalStr = "";
-		for (int i = 0; i < numLines; i++) {
-			if(assocText.Length - i * maxCharsPerLine > maxCharsPerLine) {
-				finalStr += assocText.Substring(i * maxCharsPerLine, maxCharsPerLine) + "\n";
+		foreach ( string word in words) {
+			if (word.Length + currLineLen > maxCharsPerLine) {
+				finalStr += "\n" + word;
+				currLineLen = 0;
 			} else {
-				finalStr += assocText.Substring(i*maxCharsPerLine);
+				finalStr += word + " ";
+				currLineLen += word.Length;
 			}
 		}
 		return finalStr;
