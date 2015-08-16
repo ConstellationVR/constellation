@@ -2,6 +2,7 @@
 using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using Kinect = Windows.Kinect;
 
 using LockingPolicy = Thalmic.Myo.LockingPolicy;
@@ -14,6 +15,7 @@ public class BodySourceView : MonoBehaviour
     public Material BoneMaterial;
     public GameObject BodySourceManager;
 	public GameObject Pointer;
+	public GameObject JointOrientationObject;
 
 	public GameObject generatorObject;
 
@@ -21,6 +23,7 @@ public class BodySourceView : MonoBehaviour
     private BodySourceManager _BodyManager;
 
 	private bool myoHandIsClosed = false;
+	private JointOrientation jointOrientation;
 
 	// Myo game object to connect with.
 	// This object must have a ThalmicMyo script attached.
@@ -30,8 +33,9 @@ public class BodySourceView : MonoBehaviour
 	// so that actions are only performed upon making them rather than every frame during
 	// which they are active.
 	private Pose _lastPose = Pose.Unknown;
-    
-    class BodyData {
+	private Boolean currentlyRequesting = false; 
+
+	class BodyData {
 		public GameObject gameObject;
 		public HandStatus leftHand = new HandStatus();
 		public HandStatus rightHand = new HandStatus();
@@ -76,16 +80,23 @@ public class BodySourceView : MonoBehaviour
         { Kinect.JointType.SpineShoulder, Kinect.JointType.Neck },
         { Kinect.JointType.Neck, Kinect.JointType.Head },
     };
+
+	void Start()
+	{
+		jointOrientation = JointOrientationObject.GetComponent<JointOrientation> ();
+	}
    	
     void Update () 
     {
 		// Access the ThalmicMyo component attached to the Myo game object.
 		ThalmicMyo thalmicMyo = myo.GetComponent<ThalmicMyo> ();
 
+		Debug.Log(jointOrientation.getRelRoll ());
+
 		if (thalmicMyo.pose == Pose.Rest || thalmicMyo.pose == Pose.Fist) {
 			myoHandIsClosed = thalmicMyo.pose == Pose.Fist;
 		}
-		
+
 		// Check if the pose has changed since last update.
 		// The ThalmicMyo component of a Myo game object has a pose property that is set to the
 		// currently detected pose (e.g. Pose.Fist for the user making a fist). If no pose is currently
@@ -115,6 +126,17 @@ public class BodySourceView : MonoBehaviour
 				//GetComponent<Renderer>().material = doubleTapMaterial;
 				
 				ExtendUnlockAndNotifyUserAction (thalmicMyo);
+			}
+		}
+
+		// initialize voice to text input on hand rotation
+		if (!myoHandIsClosed && Mathf.Abs(jointOrientation.getRelRoll()) > 45 && !currentlyRequesting) {
+			Debug.Log ("initialize voice to text");
+			currentlyRequesting = true; 
+
+			//check if response completed properly
+			if (generator.ProcessSpeech() != null) {
+				currentlyRequesting = false;
 			}
 		}
 
@@ -429,4 +451,5 @@ public class BodySourceView : MonoBehaviour
 		
 		myo.NotifyUserAction ();
 	}
+
 }

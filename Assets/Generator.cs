@@ -28,8 +28,11 @@ public class Generator : MonoBehaviour {
 		cube.GetComponent<CubeStart>().player = originBody;
 	}
 
-	IEnumerator ProcessSpeech() {
-		string url = "http://127.0.0.1:5555/";
+	/** 
+	 * Makes a post request to the voice_to_text server to generate text to input into the scene.
+	 */
+	public IEnumerator ProcessSpeech() {
+		string url = "http://192.168.103.30:5555/";
 		WWW www = new WWW (url);
 		string textFromSpeech;
 		yield return www;
@@ -39,8 +42,10 @@ public class Generator : MonoBehaviour {
 			JSONNode jsn = JSON.Parse (jsonStr);
 			textFromSpeech = jsn ["result"];
 			generate(textFromSpeech);
+			return true; 
 		} else {
 			Debug.Log ("Error with speech processing");
+			return false; 
 		}
 	}
 }
