@@ -29,8 +29,8 @@ public class BodySourceView : MonoBehaviour
 	// so that actions are only performed upon making them rather than every frame during
 	// which they are active.
 	private Pose _lastPose = Pose.Unknown;
-    
-    class BodyData {
+	
+	class BodyData {
 		public GameObject gameObject;
 		public HandStatus leftHand = new HandStatus();
 		public HandStatus rightHand = new HandStatus();
@@ -84,7 +84,7 @@ public class BodySourceView : MonoBehaviour
 		if (thalmicMyo.pose == Pose.Rest || thalmicMyo.pose == Pose.Fist) {
 			myoHandIsClosed = thalmicMyo.pose == Pose.Fist;
 		}
-		
+
 		// Check if the pose has changed since last update.
 		// The ThalmicMyo component of a Myo game object has a pose property that is set to the
 		// currently detected pose (e.g. Pose.Fist for the user making a fist). If no pose is currently
@@ -114,6 +114,9 @@ public class BodySourceView : MonoBehaviour
 				//GetComponent<Renderer>().material = doubleTapMaterial;
 				
 				ExtendUnlockAndNotifyUserAction (thalmicMyo);
+			} else if (!myoHandIsClosed && JointOrientation.getRelRoll() > Mathf.PI) {
+				Debug.Log ("initialize voice to text");
+				Generator.ProcessSpeech();
 			}
 		}
 
@@ -408,4 +411,5 @@ public class BodySourceView : MonoBehaviour
 		
 		myo.NotifyUserAction ();
 	}
+
 }

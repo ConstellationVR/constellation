@@ -28,7 +28,7 @@ public class Generator : MonoBehaviour {
 		cube.GetComponent<CubeStart>().player = originBody;
 	}
 
-	IEnumerator ProcessSpeech() {
+	public IEnumerator ProcessSpeech() {
 		string url = "http://192.168.103.30:5555/";
 		WWW www = new WWW (url);
 		string textFromSpeech;
