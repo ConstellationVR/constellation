@@ -18,6 +18,7 @@ public class CubeStart : MonoBehaviour {
 	public Text suggestText;
 	public GameObject lrChild; // used for line rendering
 	public GameObject smallCube; // for testing
+	public Generator generatorObj;
 
 	private bool launchDone = false;
 	private Rigidbody rb;
@@ -56,9 +57,6 @@ public class CubeStart : MonoBehaviour {
 		bc = GetComponent<BoxCollider> ();
 		bc.size = new Vector3 (textBounds.extents.x * 2 + .2f, textBounds.extents.y * 2 + .2f, .5f);
 		launchDone = true;
-
-		
-		suggestText = (Text)GameObject.FindGameObjectWithTag ("TextNode").GetComponent<Text> ();
 
 		StartCoroutine ("ProcessText");
 
@@ -225,7 +223,8 @@ public class CubeStart : MonoBehaviour {
 			}
 			
 			Debug.Log(suggestStr);
-			suggestText.text = suggestStr;
+			//suggestText.text = (string)suggestStr.Clone();
+			generatorObj.setSuggest(suggestStr);
 			Instantiate(suggestText.transform.parent, this.transform.position, this.transform.rotation);
 		} else {
 			Debug.Log("ERROR: " + www.error);

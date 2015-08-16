@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using SimpleJSON; 	
 using System;
@@ -6,6 +7,7 @@ using System;
 public class Generator : MonoBehaviour {
 	public GameObject cubePrefab;
 	public GameObject originBody;
+	public Text suggestText;
 
 	private bool waitingForResult = false;
 
@@ -23,6 +25,8 @@ public class Generator : MonoBehaviour {
 			//generate("Steve Jobs");
 		} else if (Input.GetKeyDown ("t")) {
 			generate ("Steve Jobs");
+		} else if (Input.GetKeyDown ("y")) {
+			generate ("Hilary Clinton");
 		}
 	}
 
@@ -30,6 +34,11 @@ public class Generator : MonoBehaviour {
 		GameObject cube = (GameObject) Instantiate(cubePrefab, Vector3.zero + this.transform.forward.normalized / 5, this.transform.rotation);
 		cube.GetComponent<CubeStart>().assocText = text;
 		cube.GetComponent<CubeStart>().player = originBody;
+		cube.GetComponent<CubeStart> ().generatorObj = this;
+	}
+
+	public void setSuggest(string text) {
+		suggestText.text = text;
 	}
 
 	public void launchSpeech() {

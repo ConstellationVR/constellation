@@ -455,6 +455,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cubePrefab: {fileID: 112474, guid: b8cbbf33eb3f34d9d9a4628df9f1bc5c, type: 2}
   originBody: {fileID: 1195546427}
+  suggestText: {fileID: 977909827}
 --- !u!45 &774807162
 Skybox:
   m_ObjectHideFlags: 0
@@ -603,9 +604,19 @@ Prefab:
       propertyPath: m_Text
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 142144, guid: 41cbca761eb495544ba4c83c8906c2e4, type: 2}
+      propertyPath: m_TagString
+      value: MainCanvas
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 41cbca761eb495544ba4c83c8906c2e4, type: 2}
   m_IsPrefabParent: 0
+--- !u!114 &977909827 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 11463356, guid: 41cbca761eb495544ba4c83c8906c2e4,
+    type: 2}
+  m_PrefabInternal: {fileID: 977909826}
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 --- !u!1 &1047863759
 GameObject:
   m_ObjectHideFlags: 0

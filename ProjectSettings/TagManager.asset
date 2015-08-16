@@ -8,6 +8,7 @@ TagManager:
   - New Tag
   - MainButton
   - TextNode
+  - MainCanvas
   layers:
   - Default
   - TransparentFX
