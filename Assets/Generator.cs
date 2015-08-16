@@ -6,8 +6,6 @@ using System;
 public class Generator : MonoBehaviour {
 	public GameObject cubePrefab;
 	public GameObject originBody;
-	public TextMesh text;
-	public TextMesh text2;
 
 	// Use this for initialization
 	void Start () {
@@ -18,13 +16,15 @@ public class Generator : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown ("space")) {
 			//if(!Physics.Raycast (this.transform.position, this.transform.forward, 40))
-			StartCoroutine("ProcessSpeech");
+			//StartCoroutine("ProcessSpeech"); // Disabled for testing
+
+			generate("qwerty");
 		}
 	}
 
-	public void generate() {
-		GameObject cube = (GameObject) Instantiate(cubePrefab, Vector3.zero + this.transform.forward.normalized / 5, Quaternion.identity);
-		cube.GetComponent<CubeStart>().assocText = "hello";
+	public void generate(String text) {
+		GameObject cube = (GameObject) Instantiate(cubePrefab, Vector3.zero + this.transform.forward.normalized / 5, this.transform.rotation);
+		cube.GetComponent<CubeStart>().assocText = text;
 		cube.GetComponent<CubeStart>().player = originBody;
 	}
 
@@ -38,9 +38,7 @@ public class Generator : MonoBehaviour {
 			string jsonStr = www.data;
 			JSONNode jsn = JSON.Parse (jsonStr);
 			textFromSpeech = jsn ["result"];
-			text.text = textFromSpeech;
-			text2.text = textFromSpeech;
-			Instantiate (cubePrefab, this.transform.position, this.transform.rotation);
+			generate(textFromSpeech);
 		} else {
 			Debug.Log ("Error with speech processing");
 		}
