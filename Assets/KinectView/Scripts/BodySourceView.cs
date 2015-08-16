@@ -236,11 +236,14 @@ public class BodySourceView : MonoBehaviour
 				SpringJoint joint = rightPointer.AddComponent<SpringJoint>();
 				RaycastHit hit;
 				if (Physics.Raycast(this.transform.position, rightPointer.transform.position, out hit)) {
-					//joint.anchor = Vector3(0,0,0);
+					GameObject gameObject = hit.collider.gameObject;
+
+					gameObject.GetComponent<CubeStart>().enterLinkingMode();
+				
+					joint.connectedBody = gameObject.GetComponent<Rigidbody>();
+					joint.autoConfigureConnectedAnchor = false;
 					joint.anchor = Vector3.zero;
 					joint.connectedAnchor = Vector3.zero;
-					joint.autoConfigureConnectedAnchor = false;
-					joint.connectedBody = hit.collider.gameObject.GetComponent<Rigidbody>();
 					joint.spring = 200f;
 					joint.damper = 20f;
 					joint.minDistance = 0;
@@ -255,7 +258,10 @@ public class BodySourceView : MonoBehaviour
 		} else {
 			// Free the object if one is currently bound
 			if (rightHandObject != null) {
+				rightHandObject.connectedBody.gameObject.GetComponent<CubeStart>().exitLinkingMode();
+
 				Destroy(rightHandObject);
+				rightHandObject = null;
 				//rightHandObject = null;
 			}
 		}

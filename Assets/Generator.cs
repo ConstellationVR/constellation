@@ -19,7 +19,7 @@ public class Generator : MonoBehaviour {
 	}
 
 	public void generate() {
-		GameObject cube = (GameObject) Instantiate(cubePrefab, Vector3.zero + this.transform.forward.normalized / 10, Quaternion.identity);
+		GameObject cube = (GameObject) Instantiate(cubePrefab, Vector3.zero + this.transform.forward.normalized / 5, Quaternion.identity);
 		cube.GetComponent<CubeStart>().assocText = "hello";
 		cube.GetComponent<CubeStart>().player = originBody;
 	}

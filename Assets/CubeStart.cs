@@ -17,7 +17,9 @@ public class CubeStart : MonoBehaviour {
 	private BoxCollider bc;
 
 	private float totalTime = 0f;
-	
+
+	private bool shouldHighlightLinks = false;
+	private GameObject currentCollidingElement = null;
 
 	// Use this for initialization
 	void Start () {	
@@ -26,8 +28,8 @@ public class CubeStart : MonoBehaviour {
 		rb = GetComponent<Rigidbody> ();
 		rb.AddForce (this.transform.forward * speed);
 		radiusSpring.spring = 0f;
-		radiusSpring.minDistance = 2f;
-		radiusSpring.maxDistance = 2f;
+		radiusSpring.minDistance = 1.5f;
+		radiusSpring.maxDistance = 1.5f;
 
 		// format the text so that it fits in a nice box
 		string finalText = FormatText (assocText);
@@ -37,10 +39,9 @@ public class CubeStart : MonoBehaviour {
 
 		// we want to add a collider that fits exactly around the text.
 		Bounds textBounds = text.GetComponent<Renderer> ().bounds;
-		this.transform.position = textBounds.center;
 
-		bc = this.transform.FindChild("Cube").GetComponent<BoxCollider> ();
-		bc.size = new Vector3 (textBounds.extents.x * 2, textBounds.extents.y * 2, 0f);
+		bc = GetComponent<BoxCollider> ();
+		bc.size = new Vector3 (textBounds.extents.x * 2 + .2f, textBounds.extents.y * 2 + .2f, .2f);
 		launchDone = true;
 
 	}
@@ -71,29 +72,43 @@ public class CubeStart : MonoBehaviour {
 			rb.AddForce(new Vector3(0, -30, 0));
 		}
 	}
+
+	// Methods called externally by sensor class to start/stop selection mode.
+	public void enterLinkingMode() {
+		shouldHighlightLinks = true;
+	}
+
+	public void exitLinkingMode() {
+		shouldHighlightLinks = false;
+		if (currentCollidingElement != null) {
+			// TODO: on release, add a repulsive force between the objects -- or just use spring??
+
+			// then add a spring that acts as a rigid rod to keep them tied together
+			SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
+			Debug.Log (currentCollidingElement.name);
+			newSpring.anchor = Vector3.zero;
+			newSpring.autoConfigureConnectedAnchor = false;
+			newSpring.connectedAnchor = Vector3.zero;
+			newSpring.connectedBody = currentCollidingElement.GetComponent<Rigidbody> ();
+			newSpring.minDistance = 0.5f;
+			newSpring.maxDistance = 0.8f;
+			newSpring.spring = 100f;
+			
+			// TODO: also add a visible line that always connects the centers. the connection code is in 
+			// the line object's script
+
+			currentCollidingElement = null;
+		}
+	}
+
 	void OnTriggerEnter(Collider col) {
-		// TODO (zliu): we probably have to add logic here to make sure the spring is only
-		// added if the user lets go of the object (Kinect integration).
-		
-		// TODO: while it's being held on top of the other object, change text color to green
-		// TODO: wait until release
-		// TODO: on release, change text color back to white
-		
-		// TODO: on release, add a repulsive force between the objects -- or just use spring??
-
-		// then add a spring that acts as a rigid rod to keep them tied together
-		SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
-		Debug.Log (col.gameObject.name);
-		newSpring.anchor = Vector3.zero;
-		newSpring.autoConfigureConnectedAnchor = false;
-		newSpring.connectedAnchor = Vector3.zero;
-		newSpring.connectedBody = col.gameObject.GetComponent<Rigidbody>();
-		newSpring.minDistance = 0.5f;
-		newSpring.maxDistance = 0.8f;
-		newSpring.spring = 100f;
-
-		// TODO: also add a visible line that always connects the centers. the connection code is in 
-		// the line object's script
+		if (currentCollidingElement != null) {
+			// TODO: while it's being held on top of the other object, change text color to green
+			// TODO: wait until release
+			// TODO: on release, change text color back to white
+		} else {
+			currentCollidingElement = col.gameObject;
+		}
 	}
 
 	public static string FormatText(string assocText) {
