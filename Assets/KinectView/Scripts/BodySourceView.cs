@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using Kinect = Windows.Kinect;
 
 using LockingPolicy = Thalmic.Myo.LockingPolicy;
@@ -31,7 +32,8 @@ public class BodySourceView : MonoBehaviour
 	// so that actions are only performed upon making them rather than every frame during
 	// which they are active.
 	private Pose _lastPose = Pose.Unknown;
-	
+	private Boolean currentlyRequesting = false; 
+
 	class BodyData {
 		public GameObject gameObject;
 		public HandStatus leftHand = new HandStatus();
@@ -126,9 +128,15 @@ public class BodySourceView : MonoBehaviour
 			}
 		}
 
-		if (!myoHandIsClosed && Mathf.Abs(jointOrientation.getRelRoll()) > 45) {
+		// initialize voice to text input on hand rotation
+		if (!myoHandIsClosed && Mathf.Abs(jointOrientation.getRelRoll()) > 45 && !currentlyRequesting) {
 			Debug.Log ("initialize voice to text");
-			//Generator.ProcessSpeech();
+			currentlyRequesting = true; 
+
+			//check if response completed properly
+			if (generator.ProcessSpeech() != null) {
+				currentlyRequesting = false;
+			}
 		}
 
 
