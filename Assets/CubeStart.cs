@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
+using SimpleJSON; 	
+using System;
 
 public class CubeStart : MonoBehaviour {
 	public static int speed = 142;
@@ -11,6 +14,7 @@ public class CubeStart : MonoBehaviour {
 	public TextMesh text;
 	public TextMesh text2;
 	public string assocText;
+	public Text suggestText;
 
 	private bool launchDone = false;
 	private Rigidbody rb;
@@ -44,6 +48,7 @@ public class CubeStart : MonoBehaviour {
 		bc.size = new Vector3 (textBounds.extents.x * 2 + .2f, textBounds.extents.y * 2 + .2f, .2f);
 		launchDone = true;
 
+		StartCoroutine("ProcessText");
 	}
 	
 	// Update is called once per frame
@@ -126,5 +131,25 @@ public class CubeStart : MonoBehaviour {
 			}
 		}
 		return finalStr;
+	}
+
+	IEnumerator ProcessText() {
+		string url = "http://localhost:5000/interpret/" + System.Uri.EscapeUriString(assocText);
+		WWW www = new WWW (url);
+		string suggestStr;
+		Debug.Log ("1" + url);
+		yield return www;
+		if (www.error == null) {
+			Debug.Log(url);
+			string jsonStr = www.data;
+			JSONNode jsn = JSON.Parse(jsonStr);
+			suggestStr = jsn["0"]["abstract"];
+			if (suggestStr.Length < 1) {
+				suggestStr = jsn["definitions"]["0"]["definition"];
+			}
+			suggestText.text = suggestStr;
+		} else {
+			Debug.Log("ERROR: " + www.error);
+		}
 	}
 }
