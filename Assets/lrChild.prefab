@@ -102,11 +102,11 @@ LineRenderer:
   - {x: 0, y: 0, z: 0}
   - {x: 4, y: 0, z: 0}
   m_Parameters:
-    startWidth: .100000001
-    endWidth: .100000001
+    startWidth: .0500000007
+    endWidth: .0500000007
     m_StartColor:
       serializedVersion: 2
-      rgba: 4294967295
+      rgba: 16777215
     m_EndColor:
       serializedVersion: 2
       rgba: 4294967295
@@ -117,7 +117,19 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_Parameters.startWidth
+      value: .0500000007
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Parameters.endWidth
+      value: .0500000007
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Parameters.m_StartColor.rgba
+      value: 16777215
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 148616}

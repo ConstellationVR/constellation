@@ -227,9 +227,10 @@ public class BodySourceView : MonoBehaviour
 		pointer.position = Camera.current.WorldToScreenPoint(this.transform.position);
 		
 		List<RaycastResult> raycastResults = new List<RaycastResult>();
-		EventSystem.current.RaycastAll(pointer, raycastResults);
+		EventSystem.current.RaycastAll (pointer, raycastResults);
 
 		if (raycastResults.Count > 0) {
+			Debug.Log ("Got element");
 			RaycastResult result = raycastResults[0];
 			switch (result.gameObject.tag) {
 			case "MainButton":
