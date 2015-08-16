@@ -16,9 +16,9 @@ public class Generator : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown ("space")) {
 			//if(!Physics.Raycast (this.transform.position, this.transform.forward, 40))
-			//StartCoroutine("ProcessSpeech"); // Disabled for testing
+			StartCoroutine("ProcessSpeech"); // Disabled for testing
 
-			generate("Steve Jobs");
+			//generate("Steve Jobs");
 		}
 	}
 
@@ -29,7 +29,7 @@ public class Generator : MonoBehaviour {
 	}
 
 	IEnumerator ProcessSpeech() {
-		string url = "http://192.168.103.30:5555/";
+		string url = "http://127.0.0.1:5555/";
 		WWW www = new WWW (url);
 		string textFromSpeech;
 		yield return www;

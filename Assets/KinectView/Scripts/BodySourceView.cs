@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 using Kinect = Windows.Kinect;
@@ -14,7 +15,7 @@ public class BodySourceView : MonoBehaviour
     public GameObject BodySourceManager;
 	public GameObject Pointer;
 
-	public Generator generator;
+	public GameObject generatorObject;
 
     private Dictionary<ulong, BodyData> _Bodies = new Dictionary<ulong, BodyData>();
     private BodySourceManager _BodyManager;
@@ -219,6 +220,26 @@ public class BodySourceView : MonoBehaviour
 	// Attempt to bind the object under the pointer
 	void addSpringJoint(SpringJoint joint, Vector3 target) {
 		Debug.Log ("Attaching spring");
+
+		// 1: Try to get UI element
+		PointerEventData pointer = new PointerEventData(EventSystem.current);
+		// convert to a 2D position
+		pointer.position = Camera.current.WorldToScreenPoint(this.transform.position);
+		
+		List<RaycastResult> raycastResults = new List<RaycastResult>();
+		EventSystem.current.RaycastAll(pointer, raycastResults);
+
+		if (raycastResults.Count > 0) {
+			RaycastResult result = raycastResults[0];
+			switch (result.gameObject.tag) {
+			case "MainButton":
+				generatorObject.GetComponent<Generator>().generate("hello");
+				break;
+			}
+			return;
+		}
+
+		// 2: Try to get text element
 		RaycastHit hit;
 		if (Physics.Raycast(this.transform.position, target, out hit)) {
 			GameObject gameObject = hit.collider.gameObject;
@@ -231,7 +252,7 @@ public class BodySourceView : MonoBehaviour
 			joint.anchor = Vector3.zero;
 			joint.connectedAnchor = Vector3.zero;
 			joint.spring = 200f;
-			joint.damper = 20f;
+			joint.damper = 100f;
 			joint.minDistance = 0;
 			joint.maxDistance = 0;
 			joint.breakForce = float.PositiveInfinity;

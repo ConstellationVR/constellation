@@ -6,6 +6,7 @@ TagManager:
   tags:
   - springNode
   - New Tag
+  - MainButton
   layers:
   - Default
   - TransparentFX
