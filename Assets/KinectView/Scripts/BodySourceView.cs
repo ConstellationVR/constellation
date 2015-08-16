@@ -13,6 +13,7 @@ public class BodySourceView : MonoBehaviour
     public Material BoneMaterial;
     public GameObject BodySourceManager;
 	public GameObject Pointer;
+	public GameObject JointOrientationObject;
 
 	public Generator generator;
 
@@ -20,6 +21,7 @@ public class BodySourceView : MonoBehaviour
     private BodySourceManager _BodyManager;
 
 	private bool myoHandIsClosed = false;
+	private JointOrientation jointOrientation;
 
 	// Myo game object to connect with.
 	// This object must have a ThalmicMyo script attached.
@@ -75,13 +77,18 @@ public class BodySourceView : MonoBehaviour
         { Kinect.JointType.SpineShoulder, Kinect.JointType.Neck },
         { Kinect.JointType.Neck, Kinect.JointType.Head },
     };
+
+	void Start()
+	{
+		jointOrientation = JointOrientationObject.GetComponent<JointOrientation> ();
+	}
    	
     void Update () 
     {
 		// Access the ThalmicMyo component attached to the Myo game object.
 		ThalmicMyo thalmicMyo = myo.GetComponent<ThalmicMyo> ();
 
-		Debug.Log(JointOrientation.getRelRoll ());
+		Debug.Log(jointOrientation.getRelRoll ());
 
 		if (thalmicMyo.pose == Pose.Rest || thalmicMyo.pose == Pose.Fist) {
 			myoHandIsClosed = thalmicMyo.pose == Pose.Fist;
@@ -116,10 +123,12 @@ public class BodySourceView : MonoBehaviour
 				//GetComponent<Renderer>().material = doubleTapMaterial;
 				
 				ExtendUnlockAndNotifyUserAction (thalmicMyo);
-			} else if (!myoHandIsClosed && JointOrientation.getRelRoll() > Mathf.PI) {
-				Debug.Log ("initialize voice to text");
-				Generator.ProcessSpeech();
 			}
+		}
+
+		if (!myoHandIsClosed && Mathf.Abs(jointOrientation.getRelRoll()) > 45) {
+			Debug.Log ("initialize voice to text");
+			//Generator.ProcessSpeech();
 		}
 
 

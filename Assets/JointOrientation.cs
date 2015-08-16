@@ -54,6 +54,7 @@ public class JointOrientation : MonoBehaviour
 			
 			if (thalmicMyo.pose == Pose.FingersSpread) {
 				updateReference = true;
+
 				
 				ExtendUnlockAndNotifyUserAction(thalmicMyo);
 			}
