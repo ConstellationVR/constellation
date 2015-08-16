@@ -32,7 +32,7 @@ public class CubeStart : MonoBehaviour {
 
 	//public bool hasSprings = false;
 	private bool shouldHighlightLinks = false;
-	private GameObject currentCollidingElement = null;
+	//private GameObject currentCollidingElement = null;
 
 	// Use this for initialization
 	void Start () {	
@@ -117,60 +117,68 @@ public class CubeStart : MonoBehaviour {
 	public void exitLinkingMode() {
 		Debug.Log ("Exiting linking mode");
 		shouldHighlightLinks = false;
-		if (currentCollidingElement != null) {
-			Debug.Log ("Collided with element" + currentCollidingElement);
-			Instantiate(smallCube, this.transform.position, this.transform.rotation);
-			// TODO: on release, add a repulsive force between the objects -- or just use spring??
 
-			// then add a spring that acts as a rigid rod to keep them tied together
-			SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
-			Debug.Log (currentCollidingElement.name);
-			newSpring.anchor = Vector3.zero;
-			newSpring.autoConfigureConnectedAnchor = false;
-			newSpring.connectedAnchor = Vector3.zero;
-			newSpring.connectedBody = currentCollidingElement.GetComponent<Rigidbody> ();
-			newSpring.minDistance = 0.5f;
-			newSpring.maxDistance = 0.8f;
-			newSpring.spring = 100f;
+		// Get list of all colliding elements
+		BoxCollider boxCollider = GetComponent<BoxCollider> ();
+		Collider[] hitColliders = Physics.OverlapSphere (transform.position, boxCollider.size.x / 2);
+		foreach (Collider col in hitColliders) {
+			GameObject other = col.gameObject;
+			if (other == gameObject) continue;
+			if (other.GetComponent<BoxCollider>() == null) continue;
+			if (boxCollider.bounds.Intersects(other.GetComponent<BoxCollider>().bounds)) {
+				Debug.Log ("Overlapping element" + other);
+				Instantiate(smallCube, this.transform.position, this.transform.rotation);
+				// TODO: on release, add a repulsive force between the objects -- or just use spring??
 
-			// making a new connection
-			if(!links.ContainsKey(currentCollidingElement)) {
-				// create new child object of 'this'
-				GameObject childElement = (GameObject) Instantiate(lrChild, transform.position, transform.rotation);
-				childElement.transform.parent = this.gameObject.transform;
+				// then add a spring that acts as a rigid rod to keep them tied together
+				SpringJoint newSpring = this.transform.gameObject.AddComponent<SpringJoint> ();
+				Debug.Log (other.name);
+				newSpring.anchor = Vector3.zero;
+				newSpring.autoConfigureConnectedAnchor = false;
+				newSpring.connectedAnchor = Vector3.zero;
+				newSpring.connectedBody = other.GetComponent<Rigidbody> ();
+				newSpring.minDistance = 0.5f;
+				newSpring.maxDistance = 0.8f;
+				newSpring.spring = 100f;
 
-				// the stuff immediately below is actually not necessary because we can just use a child prefab with a line renderer
-				// with the correct settings already
-				/*// add initial line renderer to the child object we just created
-				LineRenderer lr = this.transform.gameObject.AddComponent<LineRenderer> ();
-				// set its persistent properties (material, etc.)
-				*/
+				// making a new connection
+				if(!links.ContainsKey(other)) {
+					// create new child object of 'this'
+					GameObject childElement = (GameObject) Instantiate(lrChild, transform.position, transform.rotation);
+					childElement.transform.parent = this.gameObject.transform;
 
-				// set the line renderer position stuff (temporary)
-				LineRenderer lr = childElement.GetComponent<LineRenderer>();
-				lr.SetPosition(0, this.transform.localPosition);
-				lr.SetPosition(1, currentCollidingElement.transform.position);
+					// the stuff immediately below is actually not necessary because we can just use a child prefab with a line renderer
+					// with the correct settings already
+					/*// add initial line renderer to the child object we just created
+					LineRenderer lr = this.transform.gameObject.AddComponent<LineRenderer> ();
+					// set its persistent properties (material, etc.)
+					*/
 
-				// add this key-value pair to the dictionary
-				links.Add(currentCollidingElement, childElement);
+					// set the line renderer position stuff (temporary)
+					LineRenderer lr = childElement.GetComponent<LineRenderer>();
+					lr.SetPosition(0, this.transform.localPosition);
+					lr.SetPosition(1, other.transform.position);
+
+					// add this key-value pair to the dictionary
+					links.Add(other, childElement);
+				}
+			
+				// TODO: also add a visible line that always connects the centers. the connection code is in 
+				// the line object's script
 			}
-		
-			// TODO: also add a visible line that always connects the centers. the connection code is in 
-			// the line object's script
-
-			currentCollidingElement = null;
 		}
+		//currentCollidingElement = null;
 	}
 
 	void OnTriggerEnter(Collider col) {
 		Debug.Log ("OnTriggerEnter called with " + col.gameObject);
-		if (currentCollidingElement != null) {
+		//if (currentCollidingElement != null) {
 			// TODO: while it's being held on top of the other object, change text color to green
 			// TODO: wait until release
 			// TODO: on release, change text color back to white
-		} else {
-		}
-		currentCollidingElement = col.gameObject;
+		//} else {
+		//}
+		//currentCollidingElement = col.gameObject;
 	}
 
 	public static string FormatText(string assocText) {
