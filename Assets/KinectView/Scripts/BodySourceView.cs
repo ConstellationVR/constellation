@@ -81,6 +81,8 @@ public class BodySourceView : MonoBehaviour
 		// Access the ThalmicMyo component attached to the Myo game object.
 		ThalmicMyo thalmicMyo = myo.GetComponent<ThalmicMyo> ();
 
+		Debug.Log(JointOrientation.getRelRoll ());
+
 		if (thalmicMyo.pose == Pose.Rest || thalmicMyo.pose == Pose.Fist) {
 			myoHandIsClosed = thalmicMyo.pose == Pose.Fist;
 		}
