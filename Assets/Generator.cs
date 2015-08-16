@@ -16,9 +16,9 @@ public class Generator : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown ("space")) {
 			//if(!Physics.Raycast (this.transform.position, this.transform.forward, 40))
-			//StartCoroutine("ProcessSpeech"); // Disabled for testing
+			StartCoroutine("ProcessSpeech"); // Disabled for testing
 
-			generate("Steve Jobs");
+			//generate("Steve Jobs");
 		}
 	}
 
