@@ -260,7 +260,9 @@ MonoBehaviour:
   text: {fileID: 10224532}
   text2: {fileID: 10215574}
   assocText: test text
-  suggestText: {fileID: 0}
+  suggestText: {fileID: 11463356, guid: 41cbca761eb495544ba4c83c8906c2e4, type: 2}
+  lrChild: {fileID: 148616, guid: e9991f40389df224bb58e200ead61c82, type: 2}
+  smallCube: {fileID: 170080, guid: a7a619a35f0106e40a593464155134f4, type: 2}
 --- !u!114 &11480440
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -345,6 +347,19 @@ Prefab:
       propertyPath: m_MinDistance
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: lrChild
+      value: 
+      objectReference: {fileID: 148616, guid: e9991f40389df224bb58e200ead61c82, type: 2}
+    - target: {fileID: 0}
+      propertyPath: suggestText
+      value: 
+      objectReference: {fileID: 11463356, guid: 41cbca761eb495544ba4c83c8906c2e4,
+        type: 2}
+    - target: {fileID: 0}
+      propertyPath: smallCube
+      value: 
+      objectReference: {fileID: 170080, guid: a7a619a35f0106e40a593464155134f4, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 112474}

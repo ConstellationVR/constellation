@@ -16,7 +16,8 @@ public class CubeStart : MonoBehaviour {
 	public TextMesh text2;
 	public string assocText;
 	public Text suggestText;
-	public GameObject lrChild;
+	public GameObject lrChild; // used for line rendering
+	public GameObject smallCube; // for testing
 
 	private bool launchDone = false;
 	private Rigidbody rb;
@@ -118,7 +119,7 @@ public class CubeStart : MonoBehaviour {
 		shouldHighlightLinks = false;
 		if (currentCollidingElement != null) {
 			Debug.Log ("Collided with element" + currentCollidingElement);
-
+			Instantiate(smallCube, this.transform.position, this.transform.rotation);
 			// TODO: on release, add a repulsive force between the objects -- or just use spring??
 
 			// then add a spring that acts as a rigid rod to keep them tied together
@@ -204,6 +205,7 @@ public class CubeStart : MonoBehaviour {
 				suggestStr = jsn["definitions"]["0"]["definition"];
 			}
 			suggestText.text = suggestStr;
+			Instantiate(suggestText.transform.parent, this.transform.position, this.transform.rotation);
 		} else {
 			Debug.Log("ERROR: " + www.error);
 		}
