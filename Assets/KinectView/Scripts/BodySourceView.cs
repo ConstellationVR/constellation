@@ -15,15 +15,8 @@ public class BodySourceView : MonoBehaviour
 	public GameObject Pointer;
 
 	public Generator generator;
-    
-	private HandStatus leftHand = new HandStatus();
-	private HandStatus rightHand = new HandStatus();
-	private GameObject leftPointer;
-	private GameObject rightPointer;
-	private SpringJoint rightHandObject;
 
-	private GameObject bodyObject;
-    private Dictionary<ulong, GameObject> _Bodies = new Dictionary<ulong, GameObject>();
+    private Dictionary<ulong, BodyData> _Bodies = new Dictionary<ulong, BodyData>();
     private BodySourceManager _BodyManager;
 
 	private bool myoHandIsClosed = false;
@@ -37,7 +30,20 @@ public class BodySourceView : MonoBehaviour
 	// which they are active.
 	private Pose _lastPose = Pose.Unknown;
     
-    private Dictionary<Kinect.JointType, Kinect.JointType> _BoneMap = new Dictionary<Kinect.JointType, Kinect.JointType>()
+    class BodyData {
+		public GameObject gameObject;
+		public HandStatus leftHand = new HandStatus();
+		public HandStatus rightHand = new HandStatus();
+		public GameObject leftPointer;
+		public GameObject rightPointer;
+		public SpringJoint rightHandObject;
+
+		public BodyData(GameObject gameObject) {
+			this.gameObject = gameObject;
+		}
+	}
+
+	private Dictionary<Kinect.JointType, Kinect.JointType> _BoneMap = new Dictionary<Kinect.JointType, Kinect.JointType>()
     {
         { Kinect.JointType.FootLeft, Kinect.JointType.AnkleLeft },
         { Kinect.JointType.AnkleLeft, Kinect.JointType.KneeLeft },
@@ -68,11 +74,7 @@ public class BodySourceView : MonoBehaviour
         { Kinect.JointType.SpineShoulder, Kinect.JointType.Neck },
         { Kinect.JointType.Neck, Kinect.JointType.Head },
     };
-    
-	void Start() {
-		bodyObject = CreateBodyObject (0);
-	}
-
+   	
     void Update () 
     {
 		// Access the ThalmicMyo component attached to the Myo game object.
@@ -143,11 +145,6 @@ public class BodySourceView : MonoBehaviour
             if(body.IsTracked)
             {
                 trackedIds.Add (body.TrackingId);
-
-				// TODO: hacky way to make this work with one body
-				//Debug.Log ("# of bodies: " + data.Length);
-				RefreshBodyObject (body, bodyObject);
-				return;
             }
         }
         
@@ -158,7 +155,11 @@ public class BodySourceView : MonoBehaviour
         {
             if(!trackedIds.Contains(trackingId))
             {
-                Destroy(_Bodies[trackingId]);
+				BodyData bd = _Bodies[trackingId];
+                Destroy(bd.gameObject);
+				Destroy(bd.leftPointer);
+				if (bd.rightHandObject != null) Destroy(bd.rightHandObject);
+				Destroy(bd.rightPointer);
                 _Bodies.Remove(trackingId);
             }
         }
@@ -182,9 +183,10 @@ public class BodySourceView : MonoBehaviour
         }
     }
     
-    private GameObject CreateBodyObject(ulong id)
+    private BodyData CreateBodyObject(ulong id)
     {
         GameObject body = new GameObject("Body:" + id);
+		BodyData bd = new BodyData (body);
         
 		/*
         for (Kinect.JointType jt = Kinect.JointType.SpineBase; jt <= Kinect.JointType.ThumbRight; jt++)
@@ -202,40 +204,40 @@ public class BodySourceView : MonoBehaviour
         }
         */
 
-		rightPointer = Instantiate (Pointer);
-		rightPointer.name = "RightPointer";
-		rightPointer.transform.parent = body.transform;
+		bd.rightPointer = Instantiate (Pointer);
+		bd.rightPointer.name = "RightPointer";
+		bd.rightPointer.transform.parent = body.transform;
         
-		leftPointer = Instantiate (Pointer);
-		leftPointer.name = "LeftPointer";
-		leftPointer.transform.parent = body.transform;
+		bd.leftPointer = Instantiate (Pointer);
+		bd.leftPointer.name = "LeftPointer";
+		bd.leftPointer.transform.parent = body.transform;
 
-        return body;
+        return bd;
     }
     
-    private void RefreshBodyObject(Kinect.Body body, GameObject bodyObject)
+    private void RefreshBodyObject(Kinect.Body body, BodyData bd)
     {
 		Kinect.Joint headJoint = body.Joints [Kinect.JointType.Neck];
 		Vector3 headPosition = GetVector3FromJoint (headJoint);
 
-		rightHand.update (Time.deltaTime, body.HandRightState);
-		leftHand.update (Time.deltaTime, body.HandLeftState);
+		bd.rightHand.update (Time.deltaTime, body.HandRightState);
+		bd.leftHand.update (Time.deltaTime, body.HandLeftState);
 
 		Kinect.Joint rightHandJoint = body.Joints [Kinect.JointType.HandRight];
-		rightPointer.transform.position = GetVector3FromJoint (rightHandJoint) - headPosition;
-		rightPointer.GetComponent<Renderer>().material.color = GetColorForState(myoHandIsClosed);
+		bd.rightPointer.transform.position = GetVector3FromJoint (rightHandJoint) - headPosition;
+		bd.rightPointer.GetComponent<Renderer>().material.color = GetColorForState(myoHandIsClosed);
 
 		Kinect.Joint leftHandJoint = body.Joints [Kinect.JointType.HandLeft];
-		leftPointer.transform.position = GetVector3FromJoint (leftHandJoint) - headPosition;
-		leftPointer.GetComponent<Renderer>().material.color = GetColorForState(leftHand.isClosed);
+		bd.leftPointer.transform.position = GetVector3FromJoint (leftHandJoint) - headPosition;
+		bd.leftPointer.GetComponent<Renderer>().material.color = GetColorForState(bd.leftHand.isClosed);
 
 		if (myoHandIsClosed) {
 			// Attempt to bind the object under the pointer
-			if (rightHandObject == null) {
+			if (bd.rightHandObject == null) {
 				Debug.Log ("Attaching spring");
-				SpringJoint joint = rightPointer.AddComponent<SpringJoint>();
+				SpringJoint joint = bd.rightPointer.AddComponent<SpringJoint>();
 				RaycastHit hit;
-				if (Physics.Raycast(this.transform.position, rightPointer.transform.position, out hit)) {
+				if (Physics.Raycast(this.transform.position, bd.rightPointer.transform.position, out hit)) {
 					GameObject gameObject = hit.collider.gameObject;
 
 					gameObject.GetComponent<CubeStart>().enterLinkingMode();
@@ -253,15 +255,16 @@ public class BodySourceView : MonoBehaviour
 					joint.enableCollision = false;
 					joint.enablePreprocessing = true;
 				}
-				rightHandObject = joint;
+				bd.rightHandObject = joint;
 			}
 		} else {
 			// Free the object if one is currently bound
-			if (rightHandObject != null) {
-				rightHandObject.connectedBody.gameObject.GetComponent<CubeStart>().exitLinkingMode();
+			if (bd.rightHandObject != null) {
+				if (bd.rightHandObject.connectedBody != null)
+					bd.rightHandObject.connectedBody.gameObject.GetComponent<CubeStart>().exitLinkingMode();
 
-				Destroy(rightHandObject);
-				rightHandObject = null;
+				Destroy(bd.rightHandObject);
+				bd.rightHandObject = null;
 				//rightHandObject = null;
 			}
 		}
