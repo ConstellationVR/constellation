@@ -6,8 +6,8 @@ using SimpleJSON;
 public class GenerateGraphJson : MonoBehaviour {
 
 	private class Tuple {
-		private Tuple left; 
-		private Tuple right; 
+		private string left; 
+		private string right; 
 
 		public Tuple(string left, string right){
 			this.left = left; 
@@ -46,7 +46,9 @@ public class GenerateGraphJson : MonoBehaviour {
 	 * -- can be used to construct data structures in other formats i.e. d3 web view 
 	 */
 	public string returnEdgesJson() {
-		return JSONNode[(getAllEdges ())];
+		// TODO
+		//return JSONNode[(getAllEdges ())];
+		return "";
 	}
 
 	/**
@@ -54,17 +56,18 @@ public class GenerateGraphJson : MonoBehaviour {
 	 * -- this can be used later to reconstruct data/graphs to share overall mind map 
 	 */
 	private static List<Tuple> getAllEdges() {
-		List<Tuple> results; 
+		List<Tuple> results = new List<Tuple> ();
 
-		List<Tuple> gameobjects = GameObject.FindGameObjectsWithTag("textCube");
+		GameObject[] gameobjects = GameObject.FindGameObjectsWithTag("textCube");
 		foreach(GameObject go in gameobjects)
 		{
-			List<SpringJoint> componentsList = go.GetComponents<SpringJoint>();
+			string thisText = go.GetComponent<CubeStart>().assocText;
+			SpringJoint[] componentsList = go.GetComponents<SpringJoint>();
 			foreach(SpringJoint sj in componentsList)
 			{
-				Tuple edge = new Tuple(sj.text, sj.connectedBody.gameObject.text);
-				edge.put(sj.text, sj.connectedBody.gameObject.text);
-               	results.Add (edge);                   
+				string otherText = sj.connectedBody.gameObject.GetComponent<CubeStart>().assocText;
+				Tuple edge = new Tuple(thisText, otherText);
+               	results.Add (edge);
 			}
 		}
 		return results; 
