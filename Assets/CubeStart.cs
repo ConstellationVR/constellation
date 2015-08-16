@@ -130,7 +130,7 @@ public class CubeStart : MonoBehaviour {
 			if (other.GetComponent<BoxCollider>() == null) continue;
 			if (boxCollider.bounds.Intersects(other.GetComponent<BoxCollider>().bounds)) {
 				Debug.Log ("Overlapping element" + other);
-				Instantiate(smallCube, this.transform.position, this.transform.rotation);
+				//Instantiate(smallCube, this.transform.position, this.transform.rotation);
 				// TODO: on release, add a repulsive force between the objects -- or just use spring??
 
 				// then add a spring that acts as a rigid rod to keep them tied together

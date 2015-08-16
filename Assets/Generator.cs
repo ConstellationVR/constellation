@@ -51,7 +51,7 @@ public class Generator : MonoBehaviour {
 	 * Makes a post request to the voice_to_text server to generate text to input into the scene.
 	 */
 	private IEnumerator ProcessSpeech() {
-		string url = "http://dcf7e0a3.ngrok.io/";
+		string url = "http://fcb60fc2.ngrok.io/";
 		WWW www = new WWW (url);
 		string textFromSpeech;
 		yield return www;

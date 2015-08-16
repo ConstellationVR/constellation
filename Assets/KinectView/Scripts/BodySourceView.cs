@@ -131,6 +131,7 @@ public class BodySourceView : MonoBehaviour
 		// initialize voice to text input on hand rotation
 		if (!myoHandIsClosed && Mathf.Abs(jointOrientation.getRelRoll()) > 45) {
 			if (!currentlyRequesting) {
+				thalmicMyo.Vibrate (VibrationType.Long);
 				Debug.Log ("initialize voice to text");
 				currentlyRequesting = true;
 				generator.launchSpeech();
@@ -303,13 +304,13 @@ public class BodySourceView : MonoBehaviour
 
 		Kinect.Joint rightHandJoint = body.Joints [Kinect.JointType.HandRight];
 		bd.rightPointer.transform.position = GetVector3FromJoint (rightHandJoint) - headPosition;
-		bd.rightPointer.GetComponent<Renderer>().material.color = GetColorForState(myoHandIsClosed);
+		bd.rightPointer.GetComponent<Renderer>().material.color = GetColorForState(bd.rightHand.isClosed);
 
 		Kinect.Joint leftHandJoint = body.Joints [Kinect.JointType.HandLeft];
 		bd.leftPointer.transform.position = GetVector3FromJoint (leftHandJoint) - headPosition;
 		bd.leftPointer.GetComponent<Renderer>().material.color = GetColorForState(bd.leftHand.isClosed);
 
-		if (myoHandIsClosed) {
+		if (bd.rightHand.isClosed) {
 			if (bd.rightHandObject == null) {
 				SpringJoint joint = bd.rightPointer.AddComponent<SpringJoint>();
 				addSpringJoint(joint, bd.rightPointer.transform.position);
