@@ -16,7 +16,6 @@ public class BodySourceView : MonoBehaviour
     public GameObject BodySourceManager;
 	public GameObject Pointer;
 	public GameObject JointOrientationObject;
-
 	public GameObject generatorObject;
 
     private Dictionary<ulong, BodyData> _Bodies = new Dictionary<ulong, BodyData>();
@@ -24,6 +23,8 @@ public class BodySourceView : MonoBehaviour
 
 	private bool myoHandIsClosed = false;
 	private JointOrientation jointOrientation;
+	private Generator generator;
+	private Boolean currentlyRequesting = false;
 
 	// Myo game object to connect with.
 	// This object must have a ThalmicMyo script attached.
@@ -33,7 +34,6 @@ public class BodySourceView : MonoBehaviour
 	// so that actions are only performed upon making them rather than every frame during
 	// which they are active.
 	private Pose _lastPose = Pose.Unknown;
-	private Boolean currentlyRequesting = false; 
 
 	class BodyData {
 		public GameObject gameObject;
@@ -84,14 +84,13 @@ public class BodySourceView : MonoBehaviour
 	void Start()
 	{
 		jointOrientation = JointOrientationObject.GetComponent<JointOrientation> ();
+		generator = generatorObject.GetComponent<Generator> ();
 	}
    	
     void Update () 
     {
 		// Access the ThalmicMyo component attached to the Myo game object.
 		ThalmicMyo thalmicMyo = myo.GetComponent<ThalmicMyo> ();
-
-		Debug.Log(jointOrientation.getRelRoll ());
 
 		if (thalmicMyo.pose == Pose.Rest || thalmicMyo.pose == Pose.Fist) {
 			myoHandIsClosed = thalmicMyo.pose == Pose.Fist;
@@ -130,14 +129,14 @@ public class BodySourceView : MonoBehaviour
 		}
 
 		// initialize voice to text input on hand rotation
-		if (!myoHandIsClosed && Mathf.Abs(jointOrientation.getRelRoll()) > 45 && !currentlyRequesting) {
-			Debug.Log ("initialize voice to text");
-			currentlyRequesting = true; 
-
-			//check if response completed properly
-			if (generator.ProcessSpeech() != null) {
-				currentlyRequesting = false;
+		if (!myoHandIsClosed && Mathf.Abs(jointOrientation.getRelRoll()) > 45) {
+			if (!currentlyRequesting) {
+				Debug.Log ("initialize voice to text");
+				currentlyRequesting = true;
+				generator.launchSpeech();
 			}
+		} else {
+			currentlyRequesting = false;
 		}
 
 

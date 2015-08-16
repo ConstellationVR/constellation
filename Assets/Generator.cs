@@ -7,6 +7,8 @@ public class Generator : MonoBehaviour {
 	public GameObject cubePrefab;
 	public GameObject originBody;
 
+	private bool waitingForResult = false;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -16,7 +18,7 @@ public class Generator : MonoBehaviour {
 	void Update () {
 		if (Input.GetKeyDown ("space")) {
 			//if(!Physics.Raycast (this.transform.position, this.transform.forward, 40))
-			StartCoroutine ("ProcessSpeech"); // Disabled for testing
+			launchSpeech(); // Disabled for testing
 
 			//generate("Steve Jobs");
 		} else if (Input.GetKeyDown ("t")) {
@@ -30,14 +32,21 @@ public class Generator : MonoBehaviour {
 		cube.GetComponent<CubeStart>().player = originBody;
 	}
 
+	public void launchSpeech() {
+		if (waitingForResult) return;
+		StartCoroutine ("ProcessSpeech");
+		waitingForResult = true;
+	}
+
 	/** 
 	 * Makes a post request to the voice_to_text server to generate text to input into the scene.
 	 */
-	public IEnumerator ProcessSpeech() {
-		string url = "http://192.168.103.30:5555/";
+	private IEnumerator ProcessSpeech() {
+		string url = "http://dcf7e0a3.ngrok.io/";
 		WWW www = new WWW (url);
 		string textFromSpeech;
 		yield return www;
+		waitingForResult = false;
 		if (www.error == null) {
 			Debug.Log (url);
 			string jsonStr = www.data;
@@ -46,7 +55,7 @@ public class Generator : MonoBehaviour {
 			generate(textFromSpeech);
 			return true; 
 		} else {
-			Debug.Log ("Error with speech processing");
+			Debug.Log ("Error with speech processing" + www.error);
 			return false; 
 		}
 	}

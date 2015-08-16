@@ -57,6 +57,9 @@ public class CubeStart : MonoBehaviour {
 		bc.size = new Vector3 (textBounds.extents.x * 2 + .2f, textBounds.extents.y * 2 + .2f, .5f);
 		launchDone = true;
 
+		
+		suggestText = (Text)GameObject.FindGameObjectWithTag ("TextNode").GetComponent<Text> ();
+
 		StartCoroutine ("ProcessText");
 
 	}
@@ -74,7 +77,9 @@ public class CubeStart : MonoBehaviour {
 			// Update the line renderer in the child object of this (connection.Value)
 			LineRenderer currLr = connection.Value.GetComponent<LineRenderer>();
 			currLr.SetPosition(0, this.transform.localPosition);
-			currLr.SetPosition(1, connection.Key.transform.position);
+			currLr.SetPosition(1, this.transform.localPosition + (connection.Key.transform.position - this.transform.localPosition) /2);
+
+
 		}
 		// loop through all connections to update all necessary line renderers
 		/*if (this.CompareTag("springNode")){
@@ -143,24 +148,8 @@ public class CubeStart : MonoBehaviour {
 
 				// making a new connection
 				if(!links.ContainsKey(other)) {
-					// create new child object of 'this'
-					GameObject childElement = (GameObject) Instantiate(lrChild, transform.position, transform.rotation);
-					childElement.transform.parent = this.gameObject.transform;
-
-					// the stuff immediately below is actually not necessary because we can just use a child prefab with a line renderer
-					// with the correct settings already
-					/*// add initial line renderer to the child object we just created
-					LineRenderer lr = this.transform.gameObject.AddComponent<LineRenderer> ();
-					// set its persistent properties (material, etc.)
-					*/
-
-					// set the line renderer position stuff (temporary)
-					LineRenderer lr = childElement.GetComponent<LineRenderer>();
-					lr.SetPosition(0, this.transform.localPosition);
-					lr.SetPosition(1, other.transform.position);
-
-					// add this key-value pair to the dictionary
-					links.Add(other, childElement);
+					AddConnection(other);
+					other.GetComponent<CubeStart>().AddConnection(this.gameObject);
 				}
 			
 				// TODO: also add a visible line that always connects the centers. the connection code is in 
@@ -168,6 +157,27 @@ public class CubeStart : MonoBehaviour {
 			}
 		}
 		//currentCollidingElement = null;
+	}
+
+	public void AddConnection (GameObject other){
+		// create new child object of 'this'
+		GameObject childElement = (GameObject) Instantiate(lrChild, transform.position, transform.rotation);
+		childElement.transform.parent = this.gameObject.transform;
+		
+		// the stuff immediately below is actually not necessary because we can just use a child prefab with a line renderer
+		// with the correct settings already
+		/*// add initial line renderer to the child object we just created
+		LineRenderer lr = this.transform.gameObject.AddComponent<LineRenderer> ();
+		// set its persistent properties (material, etc.)
+		*/
+			
+			// set the line renderer position stuff (temporary)
+			LineRenderer lr = childElement.GetComponent<LineRenderer>();
+		lr.SetPosition(0, this.transform.localPosition);
+		lr.SetPosition(1, this.transform.localPosition + (other.transform.position - this.transform.localPosition)/2);
+		
+		// add this key-value pair to the dictionary
+		links.Add(other, childElement);
 	}
 
 	void OnTriggerEnter(Collider col) {
@@ -199,7 +209,8 @@ public class CubeStart : MonoBehaviour {
 	}
 
 	IEnumerator ProcessText() {
-		string url = "http://192.168.103.30:5000/interpret/" + System.Uri.EscapeUriString(assocText);
+		//string url = "http://192.168.86.191:5000/interpret/" + System.Uri.EscapeUriString(assocText);
+		string url = "http://linode.zacharyliu.com:5000/interpret/" + System.Uri.EscapeUriString(assocText);
 		WWW www = new WWW (url);
 		string suggestStr;
 		Debug.Log ("1" + url);
@@ -212,6 +223,8 @@ public class CubeStart : MonoBehaviour {
 			if (suggestStr.Length < 1) {
 				suggestStr = jsn["definitions"]["0"]["definition"];
 			}
+			
+			Debug.Log(suggestStr);
 			suggestText.text = suggestStr;
 			Instantiate(suggestText.transform.parent, this.transform.position, this.transform.rotation);
 		} else {
