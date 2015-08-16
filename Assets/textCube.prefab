@@ -260,6 +260,7 @@ MonoBehaviour:
   text: {fileID: 10224532}
   text2: {fileID: 10215574}
   assocText: test text
+  suggestText: {fileID: 0}
 --- !u!114 &11480440
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -334,6 +335,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Spring
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_MinDistance
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

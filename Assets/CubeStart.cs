@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
+using SimpleJSON; 	
+using System;
 
 public class CubeStart : MonoBehaviour {
 	public static int speed = 142;
@@ -11,6 +14,7 @@ public class CubeStart : MonoBehaviour {
 	public TextMesh text;
 	public TextMesh text2;
 	public string assocText;
+	public Text suggestText;
 
 	private bool launchDone = false;
 	private Rigidbody rb;
@@ -41,15 +45,16 @@ public class CubeStart : MonoBehaviour {
 		Bounds textBounds = text.GetComponent<Renderer> ().bounds;
 
 		bc = GetComponent<BoxCollider> ();
-		bc.size = new Vector3 (textBounds.extents.x * 2 + .2f, textBounds.extents.y * 2 + .2f, .2f);
+		bc.size = new Vector3 (textBounds.extents.x * 2 + .2f, textBounds.extents.y * 2 + .2f, .5f);
 		launchDone = true;
 
+		StartCoroutine("ProcessText");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (totalTime > 1f) {
-			radiusSpring.spring = 500f;
+			radiusSpring.spring = 1000f;
 		} else {
 			totalTime += Time.deltaTime;
 		}
@@ -79,8 +84,11 @@ public class CubeStart : MonoBehaviour {
 	}
 
 	public void exitLinkingMode() {
+		Debug.Log ("Exiting linking mode");
 		shouldHighlightLinks = false;
 		if (currentCollidingElement != null) {
+			Debug.Log ("Collided with element" + currentCollidingElement);
+
 			// TODO: on release, add a repulsive force between the objects -- or just use spring??
 
 			// then add a spring that acts as a rigid rod to keep them tied together
@@ -102,13 +110,14 @@ public class CubeStart : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider col) {
+		Debug.Log ("OnTriggerEnter called with " + col.gameObject);
 		if (currentCollidingElement != null) {
 			// TODO: while it's being held on top of the other object, change text color to green
 			// TODO: wait until release
 			// TODO: on release, change text color back to white
 		} else {
-			currentCollidingElement = col.gameObject;
 		}
+		currentCollidingElement = col.gameObject;
 	}
 
 	public static string FormatText(string assocText) {
@@ -126,5 +135,25 @@ public class CubeStart : MonoBehaviour {
 			}
 		}
 		return finalStr;
+	}
+
+	IEnumerator ProcessText() {
+		string url = "http://localhost:5000/interpret/" + System.Uri.EscapeUriString(assocText);
+		WWW www = new WWW (url);
+		string suggestStr;
+		Debug.Log ("1" + url);
+		yield return www;
+		if (www.error == null) {
+			Debug.Log(url);
+			string jsonStr = www.data;
+			JSONNode jsn = JSON.Parse(jsonStr);
+			suggestStr = jsn["0"]["abstract"];
+			if (suggestStr.Length < 1) {
+				suggestStr = jsn["definitions"]["0"]["definition"];
+			}
+			suggestText.text = suggestStr;
+		} else {
+			Debug.Log("ERROR: " + www.error);
+		}
 	}
 }

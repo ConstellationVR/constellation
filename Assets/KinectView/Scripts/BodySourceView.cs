@@ -36,6 +36,7 @@ public class BodySourceView : MonoBehaviour
 		public HandStatus rightHand = new HandStatus();
 		public GameObject leftPointer;
 		public GameObject rightPointer;
+		public SpringJoint leftHandObject;
 		public SpringJoint rightHandObject;
 
 		public BodyData(GameObject gameObject) {
@@ -214,6 +215,40 @@ public class BodySourceView : MonoBehaviour
 
         return bd;
     }
+
+	// Attempt to bind the object under the pointer
+	void addSpringJoint(SpringJoint joint, Vector3 target) {
+		Debug.Log ("Attaching spring");
+		RaycastHit hit;
+		if (Physics.Raycast(this.transform.position, target, out hit)) {
+			GameObject gameObject = hit.collider.gameObject;
+			Debug.Log("Got object: " + gameObject);
+			
+			gameObject.GetComponent<CubeStart>().enterLinkingMode();
+			
+			joint.connectedBody = gameObject.GetComponent<Rigidbody>();
+			joint.autoConfigureConnectedAnchor = false;
+			joint.anchor = Vector3.zero;
+			joint.connectedAnchor = Vector3.zero;
+			joint.spring = 200f;
+			joint.damper = 20f;
+			joint.minDistance = 0;
+			joint.maxDistance = 0;
+			joint.breakForce = float.PositiveInfinity;
+			joint.breakTorque = float.PositiveInfinity;
+			joint.enableCollision = false;
+			joint.enablePreprocessing = true;
+		}
+	}
+
+	// Free the object if one is currently bound
+	void destroySpringJoint(SpringJoint joint) {
+		if (joint.connectedBody != null) {
+			joint.connectedBody.gameObject.GetComponent<CubeStart> ().exitLinkingMode ();
+		}
+		
+		Destroy(joint);
+	}
     
     private void RefreshBodyObject(Kinect.Body body, BodyData bd)
     {
@@ -232,40 +267,28 @@ public class BodySourceView : MonoBehaviour
 		bd.leftPointer.GetComponent<Renderer>().material.color = GetColorForState(bd.leftHand.isClosed);
 
 		if (myoHandIsClosed) {
-			// Attempt to bind the object under the pointer
 			if (bd.rightHandObject == null) {
-				Debug.Log ("Attaching spring");
 				SpringJoint joint = bd.rightPointer.AddComponent<SpringJoint>();
-				RaycastHit hit;
-				if (Physics.Raycast(this.transform.position, bd.rightPointer.transform.position, out hit)) {
-					GameObject gameObject = hit.collider.gameObject;
-
-					gameObject.GetComponent<CubeStart>().enterLinkingMode();
-				
-					joint.connectedBody = gameObject.GetComponent<Rigidbody>();
-					joint.autoConfigureConnectedAnchor = false;
-					joint.anchor = Vector3.zero;
-					joint.connectedAnchor = Vector3.zero;
-					joint.spring = 200f;
-					joint.damper = 20f;
-					joint.minDistance = 0;
-					joint.maxDistance = 0;
-					joint.breakForce = float.PositiveInfinity;
-					joint.breakTorque = float.PositiveInfinity;
-					joint.enableCollision = false;
-					joint.enablePreprocessing = true;
-				}
+				addSpringJoint(joint, bd.rightPointer.transform.position);
 				bd.rightHandObject = joint;
 			}
 		} else {
-			// Free the object if one is currently bound
 			if (bd.rightHandObject != null) {
-				if (bd.rightHandObject.connectedBody != null)
-					bd.rightHandObject.connectedBody.gameObject.GetComponent<CubeStart>().exitLinkingMode();
-
-				Destroy(bd.rightHandObject);
+				destroySpringJoint(bd.rightHandObject);
 				bd.rightHandObject = null;
-				//rightHandObject = null;
+			}
+		}
+
+		if (bd.leftHand.isClosed) {
+			if (bd.leftHandObject == null) {
+				SpringJoint joint = bd.leftPointer.AddComponent<SpringJoint>();
+				addSpringJoint(joint, bd.leftPointer.transform.position);
+				bd.leftHandObject = joint;
+			}
+		} else {
+			if (bd.leftHandObject != null) {
+				destroySpringJoint(bd.leftHandObject);
+				bd.leftHandObject = null;
 			}
 		}
 
