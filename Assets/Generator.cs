@@ -18,7 +18,7 @@ public class Generator : MonoBehaviour {
 			//if(!Physics.Raycast (this.transform.position, this.transform.forward, 40))
 			//StartCoroutine("ProcessSpeech"); // Disabled for testing
 
-			generate("qwerty");
+			generate("Steve Jobs");
 		}
 	}
 
