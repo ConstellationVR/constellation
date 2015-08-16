@@ -38,15 +38,16 @@ public class GenerateGraphJson : MonoBehaviour {
 	 * Makes a POST request to endpoint, passing edges data in json format. 
 	 */
 	public void callEndPoint() {
+		//TODO
 	}
 
 	/** 
 	 * Returns a string of formatted Json data. 
 	 * -- can be used to construct data structures in other formats i.e. d3 web view 
 	 */
-//	public string returnEdgesJson() {
-//		return Json.Encode (getAllEdges ());
-//	}
+	public string returnEdgesJson() {
+		return JSONNode[(getAllEdges ())];
+	}
 
 	/**
 	 * Returns all edges of text strings in the graph connecting GameObject nodes. 
