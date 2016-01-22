@@ -1,12 +1,12 @@
 # Constellation: 3D Mind Mapping
 ###Inspiration
-It's incredible how much information has become available to us within the past few decades. For centuries, our methods of content organization have been limited to the page -- the lined paper and bound notebooks.
+It's incredible how much information has become available to us within the past few decades. For centuries, our methods of content organization have been limited to the lined paper and bound notebooks.
 
-Sometimes, thinkers and innovators have prefer whiteboards as flexible means to organize their insights. The free of a whiteboard remaps bullet-lists into stimulating visual diagrams that help us draw connections.
+Sometimes, thinkers and innovators prefer whiteboards as flexible means to organize their ideas and thought processes. The freedom of a whiteboard remaps bullet-lists into stimulating visual diagrams that help us draw connections.
 
 We want to take the next step.
 
-Constellation is a 3D mind-map. You take notes with simple speech and organize them with intuitive gestures. For the first time, you have the ability to draw connections as you interact with ideas literally floating around you.
+Constellation is a 3D mind-mapping tool. You take notes with simple speech and organize them with intuitive gestures. For the first time, you have the ability to draw connections as you interact with ideas literally floating around you.
 
 ###How it works
 ####CONTENT CREATION
